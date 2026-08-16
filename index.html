@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>入試頻出！重要年代120問 自己テスト</title>
+<style>
+  :root{
+    --ink:#16213a; --muted:#6b7a92; --line:#dbe3ee; --bg:#f4f7fb; --card:#fff;
+    --accent:#1f3864; --accent2:#2e74b5; --ok:#1a7f5a; --okbg:#e6f6ef;
+    --ng:#b3261e; --ngbg:#fdecea; --warn:#a86b00;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic","Noto Sans JP",sans-serif;
+    -webkit-text-size-adjust:100%;}
+  header{background:linear-gradient(135deg,#1f3864,#2e74b5);color:#fff;padding:18px 16px 16px;}
+  header h1{margin:0;font-size:19px;letter-spacing:.02em}
+  header p{margin:6px 0 0;font-size:12.5px;opacity:.88}
+  .wrap{max-width:860px;margin:0 auto;padding:14px 14px 60px}
+  .panel{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:14px;
+    box-shadow:0 1px 3px rgba(20,40,80,.05)}
+  .panel h2{margin:0 0 10px;font-size:13px;color:var(--muted);letter-spacing:.08em;font-weight:700}
+  .row{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:10px}
+  .row:last-child{margin-bottom:0}
+  button{font:inherit;cursor:pointer;border-radius:8px;border:1px solid var(--line);background:#fff;color:var(--ink);
+    padding:8px 13px;font-size:13.5px;transition:.12s}
+  button:hover{border-color:var(--accent2)}
+  button.chip.on{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:700}
+  button.primary{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:700;padding:11px 22px;font-size:15px}
+  button.primary:hover{background:#2a4a80}
+  button.ghost{background:#eef3fa}
+  .stats{display:flex;gap:10px;flex-wrap:wrap;align-items:center;font-size:13px;color:var(--muted)}
+  .bar{height:7px;background:#e6ecf5;border-radius:99px;overflow:hidden;margin:10px 0 0}
+  .bar>i{display:block;height:100%;background:linear-gradient(90deg,#2e74b5,#1f3864);width:0;transition:.3s}
+  /* quiz */
+  #quiz{display:none}
+  .qmeta{display:flex;justify-content:space-between;font-size:12.5px;color:var(--muted);margin-bottom:6px}
+  .qbox{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:22px 18px;text-align:center;
+    box-shadow:0 2px 8px rgba(20,40,80,.06)}
+  .qlabel{font-size:11.5px;color:var(--muted);letter-spacing:.14em;margin-bottom:10px}
+  .qtext{font-size:26px;font-weight:800;line-height:1.4;margin:0 0 4px;word-break:keep-all}
+  .qera{font-size:12px;color:var(--muted);margin-top:8px}
+  .ansarea{margin-top:18px}
+  input[type=text]{font:inherit;font-size:24px;text-align:center;width:170px;padding:9px 8px;border:2px solid var(--line);
+    border-radius:9px;letter-spacing:.08em}
+  input[type=text]:focus{outline:none;border-color:var(--accent2)}
+  .choices{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:6px}
+  @media(max-width:520px){.choices{grid-template-columns:1fr}.qtext{font-size:21px}}
+  .choices button{padding:13px 10px;font-size:14.5px;text-align:left;line-height:1.35}
+  .choices button.pickok{background:var(--okbg);border-color:var(--ok);color:var(--ok);font-weight:700}
+  .choices button.pickng{background:var(--ngbg);border-color:var(--ng);color:var(--ng);font-weight:700}
+  .choices button.picked{background:#e9eff8;border-color:var(--accent2);color:var(--accent);font-weight:700}
+  .choices button[disabled]{opacity:1}
+  .feed{margin-top:16px;border-radius:11px;padding:14px;text-align:left;display:none}
+  .feed.ok{background:var(--okbg);border:1px solid #b8e3d0}
+  .feed.ng{background:var(--ngbg);border:1px solid #f2c4bf}
+  .feed .verdict{font-weight:800;font-size:16px;margin-bottom:7px}
+  .feed.ok .verdict{color:var(--ok)}
+  .feed.ng .verdict{color:var(--ng)}
+  .feed .ansline{font-size:19px;font-weight:800;margin-bottom:8px}
+  .goro{background:#fff;border:1px dashed #c3cfe0;border-radius:8px;padding:10px 12px;font-size:14px;line-height:1.6}
+  .goro b{color:var(--accent)}
+  .nav{display:flex;gap:9px;justify-content:center;margin-top:16px;flex-wrap:wrap}
+  /* result */
+  #result{display:none;text-align:center}
+  .score{font-size:52px;font-weight:800;color:var(--accent);line-height:1.1}
+  .scoresub{color:var(--muted);font-size:14px;margin-top:4px}
+  .misslist{text-align:left;margin-top:18px}
+  .misslist h3{font-size:13px;color:var(--muted);letter-spacing:.08em;margin:0 0 8px}
+  .missrow{border:1px solid var(--line);border-left:4px solid var(--ng);border-radius:8px;padding:9px 11px;margin-bottom:7px;font-size:13.5px;background:#fff}
+  .missrow b{color:var(--accent)}
+  .missrow .mg{color:var(--muted);font-size:12.5px;display:block;margin-top:3px}
+  /* list mode */
+  #listmode{display:none}
+  table{width:100%;border-collapse:collapse;font-size:13.5px;background:#fff}
+  th,td{border:1px solid var(--line);padding:7px 9px;text-align:left;vertical-align:top}
+  th{background:#e9eff8;color:var(--accent);font-size:12.5px;position:sticky;top:0}
+  td.yr{width:64px;text-align:center;font-weight:700;color:var(--accent)}
+  tr.hide td.hidden-cell{color:transparent;background:#eef2f8;cursor:pointer;border-radius:4px}
+  .hint{font-size:12px;color:var(--muted);margin:0 0 8px}
+  .eratitle{margin:20px 0 7px;font-size:15px;font-weight:800;color:var(--accent);border-bottom:2px solid var(--accent2);padding-bottom:4px}
+  footer{text-align:center;color:var(--muted);font-size:11.5px;padding:20px 10px 30px}
+</style>
+</head>
+<body>
+<header>
+  <h1>入試頻出！重要年代120問　自己テスト</h1>
+  <p>出題形式・時代・問題数を選んでスタート。まちがえた問題は最後にまとめて復習できます。</p>
+</header>
+
+<div class="wrap">
+
+  <div id="setup">
+    <div class="panel">
+      <h2>1. 出題形式</h2>
+      <div class="row" id="modeRow">
+        <button class="chip on" data-mode="e2y">出来事 → 年号（記述）</button>
+        <button class="chip" data-mode="e2yc">出来事 → 年号（4択）</button>
+        <button class="chip" data-mode="y2e">年号 → 出来事（4択）</button>
+        <button class="chip" data-mode="order">古い順に並べる</button>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>2. 出題範囲（時代）</h2>
+      <div class="row" id="eraRow"></div>
+      <div class="row">
+        <button class="ghost" id="allEra">すべて選択</button>
+        <button class="ghost" id="noEra">すべて解除</button>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>3. 問題数</h2>
+      <div class="row" id="cntRow">
+        <button class="chip on" data-cnt="10">10問</button>
+        <button class="chip" data-cnt="20">20問</button>
+        <button class="chip" data-cnt="30">30問</button>
+        <button class="chip" data-cnt="0">全問</button>
+      </div>
+      <div class="stats"><span id="poolInfo"></span></div>
+    </div>
+
+    <div class="row" style="justify-content:center;margin-top:4px">
+      <button class="primary" id="startBtn">テスト開始</button>
+      <button class="ghost" id="listBtn">一覧・暗記モードを見る</button>
+    </div>
+  </div>
+
+  <div id="quiz">
+    <div class="qmeta"><span id="prog"></span><span id="live"></span></div>
+    <div class="bar"><i id="barfill"></i></div>
+    <div class="qbox" style="margin-top:12px">
+      <div class="qlabel" id="qlabel"></div>
+      <p class="qtext" id="qtext"></p>
+      <div class="qera" id="qera"></div>
+      <div class="ansarea" id="ansarea"></div>
+      <div class="feed" id="feed">
+        <div class="verdict" id="verdict"></div>
+        <div class="ansline" id="ansline"></div>
+        <div class="goro" id="goroline"></div>
+      </div>
+      <div class="nav" id="nav"></div>
+    </div>
+    <div class="row" style="justify-content:center;margin-top:14px">
+      <button class="ghost" id="quitBtn">やめて設定に戻る</button>
+    </div>
+  </div>
+
+  <div id="result">
+    <div class="panel">
+      <div class="score" id="scoreNum"></div>
+      <div class="scoresub" id="scoreSub"></div>
+      <div class="bar"><i id="rbar"></i></div>
+      <div class="row" style="justify-content:center;margin-top:16px">
+        <button class="primary" id="retryMiss">まちがえた問題だけ再挑戦</button>
+        <button class="ghost" id="againBtn">もう一度同じ設定で</button>
+        <button class="ghost" id="backBtn">設定に戻る</button>
+      </div>
+    </div>
+    <div class="panel misslist" id="missPanel">
+      <h3>まちがえた問題</h3>
+      <div id="missBody"></div>
+    </div>
+  </div>
+
+  <div id="listmode">
+    <div class="panel">
+      <div class="row">
+        <button class="chip on" id="showAll">全部表示</button>
+        <button class="chip" id="hideYear">年号を隠す</button>
+        <button class="chip" id="hideEvent">出来事を隠す</button>
+        <button class="ghost" id="listBack">テストに戻る</button>
+      </div>
+      <p class="hint">隠したマスをクリック（タップ）すると、その1つだけ答えが出ます。</p>
+    </div>
+    <div id="listBody"></div>
+  </div>
+
+</div>
+<footer>入試頻出！重要年代120問　自己テスト｜語呂合わせは各問の解説に表示されます</footer>
+
+<script>
+var DATA = [{"y":57,"e":"倭の奴国王が後漢に使いを送る","g":"ご（5）な（7）、後漢に使いを送る倭の奴国王（金印を授かる）","era":"弥生・古墳時代"},{"y":239,"e":"卑弥呼が魏に使いを送る","g":"に・さん・きゅう（239）、卑弥呼が魏に使いを送る","era":"弥生・古墳時代"},{"y":538,"e":"仏教伝来","g":"ご参拝（538）しよう、仏教伝来","era":"飛鳥時代"},{"y":593,"e":"聖徳太子が摂政となる","g":"ご苦さん（593）、聖徳太子が摂政になる","era":"飛鳥時代"},{"y":603,"e":"冠位十二階","g":"ろく・まる・さん（603）、冠位十二階で役人をランク分け","era":"飛鳥時代"},{"y":604,"e":"十七条憲法","g":"ろく・まる・し（604）、十七条憲法で役人の心構え","era":"飛鳥時代"},{"y":607,"e":"遣隋使（小野妹子）","g":"ろく・まる・なな（607）、小野妹子を隋へ（遣隋使）","era":"飛鳥時代"},{"y":645,"e":"大化改新","g":"無事（64）にご（5）一新、大化の改新","era":"飛鳥時代"},{"y":663,"e":"白村江の戦い","g":"無理む（66）さん（3）、白村江で唐・新羅に大敗","era":"飛鳥時代"},{"y":672,"e":"壬申の乱","g":"無難に（672）勝利、大海人皇子の壬申の乱","era":"飛鳥時代"},{"y":701,"e":"大宝律令","g":"なお（70）一（1）番の法典、大宝律令","era":"飛鳥時代"},{"y":710,"e":"平城京遷都","g":"なんと（710）立派な平城京","era":"飛鳥時代"},{"y":723,"e":"三世一身法","g":"名に（72）さん（3）代限り、三世一身法","era":"飛鳥時代"},{"y":743,"e":"墾田永年私財法","g":"なし（74）さん（3）、開墾した土地は永久に自分のもの（墾田永年私財法）","era":"飛鳥時代"},{"y":752,"e":"東大寺大仏開眼","g":"なごに（752）光る、東大寺の大仏開眼","era":"飛鳥時代"},{"y":794,"e":"平安京遷都","g":"鳴くよ（794）うぐいす平安京","era":"平安時代"},{"y":894,"e":"遣唐使廃止","g":"白紙（894）に戻そう遣唐使","era":"平安時代"},{"y":935,"e":"平将門の乱","g":"くさご（935）、関東で平将門の乱","era":"平安時代"},{"y":939,"e":"藤原純友の乱","g":"くさく（939）瀬戸内、藤原純友の乱","era":"平安時代"},{"y":988,"e":"藤原元命が訴えられる","g":"くはや（988）！尾張の民が国司・藤原元命を訴える","era":"平安時代"},{"y":1016,"e":"藤原道長が摂政となる","g":"藤（とう＝10）色（いろ＝16）づく、藤原道長が摂政に","era":"平安時代"},{"y":1086,"e":"白河上皇が院政を始める","g":"いち・まる・はち・ろく（1086）、白河上皇が院政を始める","era":"平安時代"},{"y":1156,"e":"保元の乱","g":"いい頃（1156）に武士の出番、保元の乱","era":"平安時代"},{"y":1159,"e":"平治の乱","g":"いい極（1159）み、平治の乱で平清盛が台頭","era":"平安時代"},{"y":1167,"e":"平清盛が太政大臣となる","g":"いい路（1167）な！平清盛が太政大臣に","era":"平安時代"},{"y":1180,"e":"源頼朝が挙兵する","g":"いち・いち・はち・まる（1180）、源頼朝が伊豆で挙兵","era":"平安時代"},{"y":1185,"e":"壇ノ浦の戦い・守護地頭設置","g":"いい箱（1185）作ろう鎌倉幕府（壇ノ浦で平氏滅亡、守護・地頭を設置）","era":"平安時代"},{"y":1192,"e":"源頼朝が征夷大将軍となる","g":"いい国（1192）作ろう鎌倉幕府（頼朝が征夷大将軍に）","era":"平安時代"},{"y":1221,"e":"承久の乱","g":"いち・に・に・いち（1221）、後鳥羽上皇の承久の乱","era":"鎌倉時代"},{"y":1232,"e":"御成敗式目（貞永式目）","g":"いち・に・さん・に（1232）、御成敗式目を制定","era":"鎌倉時代"},{"y":1274,"e":"文永の役","g":"いち・に・な・し（1274）、元軍襲来の文永の役","era":"鎌倉時代"},{"y":1281,"e":"弘安の役","g":"いち・に・は・い（1281）、二度目の元寇、弘安の役","era":"鎌倉時代"},{"y":1297,"e":"永仁の徳政令","g":"いち・に・く・な（1297）、御家人を救う永仁の徳政令","era":"鎌倉時代"},{"y":1333,"e":"鎌倉幕府滅亡・建武の新政","g":"いざ（13）さんざん（33）、鎌倉幕府滅亡・建武の新政","era":"鎌倉時代"},{"y":1336,"e":"南北朝分立","g":"いち・さん・さん・ろく（1336）、朝廷が南北に分裂","era":"南北朝・室町時代"},{"y":1338,"e":"足利尊氏が征夷大将軍となる","g":"いざ（13）さんぱち（38）、足利尊氏が将軍に（室町幕府）","era":"南北朝・室町時代"},{"y":1392,"e":"南北朝合一","g":"いざ（13）くに（92）を一つに、南北朝合一（足利義満）","era":"南北朝・室町時代"},{"y":1404,"e":"日明貿易開始","g":"いち・よん・まる・よん（1404）、勘合を使う日明貿易開始","era":"南北朝・室町時代"},{"y":1428,"e":"正長の土一揆","g":"いし（14）には（28）決起、正長の土一揆","era":"南北朝・室町時代"},{"y":1467,"e":"応仁の乱","g":"人世（1467）むなし、応仁の乱","era":"南北朝・室町時代"},{"y":1485,"e":"山城の国一揆","g":"いし（14）はご（85）、農民が自治する山城の国一揆","era":"南北朝・室町時代"},{"y":1488,"e":"加賀の一向一揆","g":"いし（14）はは（88）、加賀の一向一揆","era":"南北朝・室町時代"},{"y":1543,"e":"鉄砲伝来","g":"以後（15）よさん（43）、種子島に鉄砲伝来","era":"戦国〜安土桃山時代"},{"y":1549,"e":"キリスト教伝来","g":"以後よく（1549）広まるキリスト教","era":"戦国〜安土桃山時代"},{"y":1560,"e":"桶狭間の戦い","g":"以後（15）ろお（60）天下へ、桶狭間の戦い","era":"戦国〜安土桃山時代"},{"y":1573,"e":"室町幕府滅亡","g":"いごなみ（1573）だ、室町幕府滅亡","era":"戦国〜安土桃山時代"},{"y":1575,"e":"長篠の戦い","g":"いごなご（1575）、長篠の戦いで鉄砲隊が活躍","era":"戦国〜安土桃山時代"},{"y":1582,"e":"本能寺の変・太閤検地","g":"以後（15）はに（82）がい思い、本能寺の変（同年、太閤検地開始）","era":"戦国〜安土桃山時代"},{"y":1588,"e":"刀狩令","g":"以後はや（1588）く武器を出せ、刀狩令","era":"戦国〜安土桃山時代"},{"y":1590,"e":"豊臣秀吉が全国統一","g":"以後（15）くれ（90）ぐれもよろしく、秀吉が全国統一","era":"戦国〜安土桃山時代"},{"y":1592,"e":"文禄の役","g":"以後くに（1592）へ出兵、文禄の役","era":"戦国〜安土桃山時代"},{"y":1597,"e":"慶長の役","g":"以後くな（1597）る再出兵、慶長の役","era":"戦国〜安土桃山時代"},{"y":1600,"e":"関ヶ原の戦い","g":"ヒーロー（16）おお（00）、天下分け目の関ヶ原の戦い","era":"戦国〜安土桃山時代"},{"y":1603,"e":"徳川家康が征夷大将軍となる","g":"いろ（16）おさん（03）、家康が将軍になり江戸幕府を開く","era":"江戸時代"},{"y":1615,"e":"武家諸法度","g":"異論以後（1615）言うな、武家諸法度","era":"江戸時代"},{"y":1635,"e":"参勤交代","g":"いろ（16）みご（35）とな行列、参勤交代","era":"江戸時代"},{"y":1637,"e":"島原・天草一揆","g":"いろみな（1637）立ち上がる、島原・天草一揆","era":"江戸時代"},{"y":1639,"e":"ポルトガル船来航禁止","g":"いろさく（1639）鎖国、ポルトガル船来航禁止","era":"江戸時代"},{"y":1685,"e":"最初の生類憐みの令","g":"いろはご（1685）、生類憐みの令（徳川綱吉）","era":"江戸時代"},{"y":1716,"e":"享保の改革","g":"いな（17）いろ（16）変えるぞ、享保の改革（徳川吉宗）","era":"江戸時代"},{"y":1772,"e":"田沼意次が老中となる","g":"いな（17）なに（72）でもやる、田沼意次が老中に","era":"江戸時代"},{"y":1787,"e":"寛政の改革","g":"いな（17）はな（87）より倹約、寛政の改革（松平定信）","era":"江戸時代"},{"y":1792,"e":"ラクスマン来航","g":"いな（17）くに（92）へ、ラクスマンが根室に来航","era":"江戸時代"},{"y":1808,"e":"フェートン号事件","g":"いや（18）おや（08）？フェートン号が長崎に侵入","era":"江戸時代"},{"y":1825,"e":"異国船打払令","g":"いや（18）にご（25）る海、異国船打払令","era":"江戸時代"},{"y":1837,"e":"大塩の乱・モリソン号事件","g":"いや（18）さな（37）がら反乱、大塩の乱（同年モリソン号事件）","era":"江戸時代"},{"y":1841,"e":"天保の改革","g":"いや（18）よい（41）改革を、天保の改革（水野忠邦）","era":"江戸時代"},{"y":1854,"e":"日米和親条約","g":"いや（18）ごし（54）に開国、日米和親条約","era":"江戸時代"},{"y":1858,"e":"日米修好通商条約","g":"いやでもゴーヤ（1858）、日米修好通商条約","era":"江戸時代"},{"y":1860,"e":"桜田門外の変","g":"いや（18）むれ（60）、桜田門外の変で井伊直弼が暗殺される","era":"江戸時代"},{"y":1866,"e":"薩長同盟","g":"いや（18）むむ（66）と手を組む、薩長同盟","era":"江戸時代"},{"y":1867,"e":"大政奉還","g":"いや（18）むな（67）しく幕府終幕、大政奉還","era":"江戸時代"},{"y":1868,"e":"五箇条の御誓文","g":"いや（18）むや（68）にはしない、五箇条の御誓文","era":"江戸時代"},{"y":1871,"e":"廃藩置県","g":"いや（18）ない（71）、藩はもうない、廃藩置県","era":"江戸時代"},{"y":1872,"e":"鉄道開通・富岡製糸場","g":"いや（18）なに（72）？汽車が走った、鉄道開通・富岡製糸場","era":"江戸時代"},{"y":1873,"e":"徴兵令・地租改正","g":"いや（18）なみ（73）の負担、徴兵令・地租改正","era":"明治時代"},{"y":1874,"e":"民撰議院設立の建白書","g":"いや（18）なし（74）、板垣退助が民撰議院設立の建白書","era":"明治時代"},{"y":1877,"e":"西南戦争","g":"いや（18）なな（77）、西郷隆盛立つ、西南戦争","era":"明治時代"},{"y":1881,"e":"自由党","g":"いや（18）はい（81）自由党、板垣退助が結成","era":"明治時代"},{"y":1882,"e":"立憲改進党","g":"いや（18）はに（82）立憲改進党、大隈重信が結成","era":"明治時代"},{"y":1884,"e":"秩父事件","g":"いや（18）はし（84）る困窮農民、秩父事件","era":"明治時代"},{"y":1885,"e":"内閣制度","g":"いや（18）はご（85）、伊藤博文が内閣制度を創設","era":"明治時代"},{"y":1886,"e":"ノルマントン号事件","g":"いや（18）はむ（86）ごい！ノルマントン号事件","era":"明治時代"},{"y":1889,"e":"大日本帝国憲法発布","g":"いや（18）はく（89）布、大日本帝国憲法発布","era":"明治時代"},{"y":1894,"e":"領事裁判権撤廃・日清戦争","g":"いや（18）くし（94）た条約改正（領事裁判権撤廃）と日清戦争","era":"明治時代"},{"y":1901,"e":"八幡製鉄所","g":"いく（19）おい（01）よく、八幡製鉄所が操業","era":"明治時代"},{"y":1902,"e":"日英同盟","g":"いく（19）おに（02）にも負けぬ、日英同盟","era":"明治時代"},{"y":1904,"e":"日露戦争","g":"いく（19）おし（04）て開戦、日露戦争","era":"明治時代"},{"y":1910,"e":"韓国併合","g":"いく（19）とお（10）くまで、韓国併合","era":"明治時代"},{"y":1911,"e":"関税自主権回復","g":"いく（19）いい（11）ぞ関税自主権回復、条約改正が完了","era":"明治時代"},{"y":1914,"e":"第一次世界大戦","g":"行く意思（1914）で参戦、第一次世界大戦","era":"大正時代"},{"y":1915,"e":"対華二十一か条の要求","g":"行く（19）いご（15）押し、対華二十一か条の要求","era":"大正時代"},{"y":1918,"e":"米騒動","g":"行く（19）いや（18）米が高い、米騒動","era":"大正時代"},{"y":1919,"e":"ベルサイユ条約","g":"行く行く（1919）パリへ、ベルサイユ条約","era":"大正時代"},{"y":1923,"e":"関東大震災","g":"行く（19）にさん（23）の被害、関東大震災","era":"大正時代"},{"y":1925,"e":"治安維持法・普通選挙法","g":"行く（19）にご（25）、治安維持法と普通選挙法（同じ年にセットで）","era":"大正時代"},{"y":1929,"e":"世界恐慌","g":"行く（19）にく（29）、世界恐慌","era":"昭和時代（戦前・戦中）"},{"y":1931,"e":"満州事変（柳条湖事件）","g":"行く（19）さい（31）先、満州事変（柳条湖事件）","era":"昭和時代（戦前・戦中）"},{"y":1932,"e":"五・一五事件","g":"行く（19）さに（32）、五・一五事件で犬養毅暗殺","era":"昭和時代（戦前・戦中）"},{"y":1933,"e":"国際連盟脱退","g":"行く（19）さざん（33）と脱退、国際連盟脱退","era":"昭和時代（戦前・戦中）"},{"y":1936,"e":"二・二六事件","g":"行く（19）さむ（36）い雪の日、二・二六事件","era":"昭和時代（戦前・戦中）"},{"y":1937,"e":"日中戦争（盧溝橋事件）","g":"行く（19）さな（37）か、日中戦争（盧溝橋事件）","era":"昭和時代（戦前・戦中）"},{"y":1939,"e":"第二次世界大戦","g":"行く（19）さく（39）せん、第二次世界大戦","era":"昭和時代（戦前・戦中）"},{"y":1941,"e":"太平洋戦争","g":"行く（19）よい（41）真珠湾、太平洋戦争開戦","era":"昭和時代（戦前・戦中）"},{"y":1945,"e":"ポツダム宣言","g":"行く（19）よご（45）、ポツダム宣言を受諾し終戦","era":"昭和時代（戦前・戦中）"},{"y":1946,"e":"日本国憲法公布","g":"行く（19）よろ（46）こび、日本国憲法公布","era":"昭和時代（戦後）〜平成〜令和"},{"y":1950,"e":"朝鮮戦争","g":"行く（19）ごお（50）、朝鮮戦争","era":"昭和時代（戦後）〜平成〜令和"},{"y":1951,"e":"サンフランシスコ平和条約・日米安全保障条約","g":"行く（19）こい（51）独立へ、サンフランシスコ平和条約・日米安保条約","era":"昭和時代（戦後）〜平成〜令和"},{"y":1956,"e":"日ソ共同宣言・国際連合加盟","g":"行く（19）ころ（56）国連へ、日ソ共同宣言・国際連合加盟","era":"昭和時代（戦後）〜平成〜令和"},{"y":1960,"e":"国民所得倍増計画","g":"行く（19）ろお（60）、国民所得倍増計画（池田勇人）","era":"昭和時代（戦後）〜平成〜令和"},{"y":1964,"e":"最初の東京オリンピック","g":"行く（19）ろし（64）、最初の東京オリンピック","era":"昭和時代（戦後）〜平成〜令和"},{"y":1965,"e":"日韓基本条約","g":"行く（19）ろご（65）、日韓基本条約","era":"昭和時代（戦後）〜平成〜令和"},{"y":1972,"e":"沖縄返還・日中共同声明","g":"行く（19）なに（72）沖縄へ、沖縄返還・日中共同声明","era":"昭和時代（戦後）〜平成〜令和"},{"y":1973,"e":"第一次石油危機","g":"行く（19）なみ（73）が変わる、第一次石油危機","era":"昭和時代（戦後）〜平成〜令和"},{"y":1989,"e":"マルタ会談","g":"行く（19）はく（89）、マルタ会談で冷戦終結","era":"昭和時代（戦後）〜平成〜令和"},{"y":1992,"e":"PKO協力法","g":"行く（19）くに（92）へ、PKO協力法","era":"昭和時代（戦後）〜平成〜令和"},{"y":1995,"e":"阪神・淡路大震災","g":"行く（19）くご（95）、阪神・淡路大震災","era":"昭和時代（戦後）〜平成〜令和"},{"y":2001,"e":"アメリカ同時多発テロ","g":"に（2）お（0）お（0）い（1）煙、アメリカ同時多発テロ","era":"昭和時代（戦後）〜平成〜令和"},{"y":2011,"e":"東日本大震災","g":"においい（2011）、東日本大震災","era":"昭和時代（戦後）〜平成〜令和"},{"y":2022,"e":"ロシアのウクライナ侵攻","g":"におにに（2022）、ロシアのウクライナ侵攻","era":"昭和時代（戦後）〜平成〜令和"}];
+var ERAS = [];
+(function(){ var seen={}; for(var i=0;i<DATA.length;i++){ if(!seen[DATA[i].era]){seen[DATA[i].era]=1;ERAS.push(DATA[i].era);} } })();
+
+var mode='e2y', count=10, selEras={}, queue=[], idx=0, correct=0, misses=[], answered=false, lastSettings=null;
+
+function $(id){return document.getElementById(id);}
+function shuffle(a){for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t;}return a;}
+
+/* ---- setup UI ---- */
+ERAS.forEach(function(e){
+  selEras[e]=true;
+  var b=document.createElement('button');
+  b.className='chip on'; b.textContent=e; b.setAttribute('data-era',e);
+  b.onclick=function(){ selEras[e]=!selEras[e]; b.className='chip'+(selEras[e]?' on':''); updatePool(); };
+  $('eraRow').appendChild(b);
+});
+function bindChips(rowId, attr, cb){
+  var row=$(rowId);
+  row.addEventListener('click', function(ev){
+    var t=ev.target; if(t.tagName!=='BUTTON'||!t.hasAttribute(attr))return;
+    var bs=row.querySelectorAll('button[' + attr + ']');
+    for(var i=0;i<bs.length;i++) bs[i].className='chip';
+    t.className='chip on'; cb(t.getAttribute(attr));
+  });
+}
+bindChips('modeRow','data-mode',function(v){mode=v;updatePool();});
+bindChips('cntRow','data-cnt',function(v){count=parseInt(v,10);updatePool();});
+$('allEra').onclick=function(){ERAS.forEach(function(e){selEras[e]=true;});syncEra();};
+$('noEra').onclick=function(){ERAS.forEach(function(e){selEras[e]=false;});syncEra();};
+function syncEra(){
+  var bs=$('eraRow').querySelectorAll('button[data-era]');
+  for(var i=0;i<bs.length;i++){var e=bs[i].getAttribute('data-era');bs[i].className='chip'+(selEras[e]?' on':'');}
+  updatePool();
+}
+function pool(){ return DATA.filter(function(d){return selEras[d.era];}); }
+function updatePool(){
+  var n=pool().length;
+  var extra = (mode==='order') ? '　※並べ替えは4問セットで出題します' : '';
+  $('poolInfo').textContent='選択中の範囲：'+n+'問'+(count?('／出題：'+Math.min(count,n)+'問'):'／出題：全'+n+'問')+extra;
+}
+updatePool();
+
+/* ---- start ---- */
+$('startBtn').onclick=function(){ lastSettings={mode:mode,count:count,eras:JSON.parse(JSON.stringify(selEras))}; buildQueue(pool()); run(); };
+$('againBtn').onclick=function(){ buildQueue(pool()); run(); };
+$('backBtn').onclick=function(){ show('setup'); };
+$('quitBtn').onclick=function(){ show('setup'); };
+$('retryMiss').onclick=function(){
+  var items=misses.map(function(m){return m.item;});
+  if(!items.length){show('setup');return;}
+  buildQueue(items, true); run();
+};
+
+function buildQueue(src, all){
+  var arr=shuffle(src.slice());
+  var n=(all||count===0)?arr.length:Math.min(count,arr.length);
+  if(mode==='order'){
+    var groups=[]; var pooled=shuffle(src.slice());
+    var want=(all||count===0)?Math.max(1,Math.floor(pooled.length/4)):Math.max(1,Math.round(n/4));
+    for(var g=0; g<want && pooled.length>=4; g++){ groups.push(pooled.splice(0,4)); }
+    queue=groups;
+  } else {
+    queue=arr.slice(0,n);
+  }
+  idx=0; correct=0; misses=[];
+}
+
+function show(which){
+  ['setup','quiz','result','listmode'].forEach(function(k){ $(k).style.display = (k===which) ? (k==='result'?'block':'block') : 'none'; });
+  window.scrollTo(0,0);
+}
+function run(){ show('quiz'); render(); }
+
+/* ---- render ---- */
+function render(){
+  answered=false;
+  var total=queue.length;
+  if(idx>=total){ finish(); return; }
+  $('prog').textContent='第'+(idx+1)+'問 / 全'+total+'問';
+  $('live').textContent='正解 '+correct+'　誤答 '+misses.length;
+  $('barfill').style.width=(idx/total*100)+'%';
+  $('feed').style.display='none'; $('feed').className='feed';
+  $('nav').innerHTML=''; $('ansarea').innerHTML='';
+
+  if(mode==='order'){ renderOrder(); return; }
+  var it=queue[idx];
+  $('qera').textContent=it.era;
+
+  if(mode==='y2e'){
+    $('qlabel').textContent='この年に起きた出来事は？';
+    $('qtext').textContent=it.y+'年';
+    var opts=makeOptions(it,'e');
+    var box=document.createElement('div'); box.className='choices';
+    opts.forEach(function(o){
+      var b=document.createElement('button'); b.textContent=o.e;
+      b.onclick=function(){ if(answered)return; judge(o.y===it.y, it, b, o.e); };
+      box.appendChild(b);
+    });
+    $('ansarea').appendChild(box);
+  } else if(mode==='e2yc'){
+    $('qlabel').textContent='この出来事は何年？';
+    $('qtext').textContent=it.e;
+    var opts2=makeOptions(it,'y');
+    var box2=document.createElement('div'); box2.className='choices';
+    opts2.forEach(function(o){
+      var b=document.createElement('button'); b.textContent=o.y+'年';
+      b.onclick=function(){ if(answered)return; judge(o.y===it.y, it, b, o.y+'年'); };
+      box2.appendChild(b);
+    });
+    $('ansarea').appendChild(box2);
+  } else {
+    $('qlabel').textContent='この出来事は何年？（数字を入力）';
+    $('qtext').textContent=it.e;
+    var inp=document.createElement('input'); inp.type='text'; inp.inputMode='numeric'; inp.placeholder='年'; inp.id='inp';
+    var sub=document.createElement('button'); sub.className='primary'; sub.textContent='答え合わせ'; sub.style.marginLeft='10px';
+    sub.onclick=function(){ if(answered)return; var v=(inp.value||'').replace(/[^0-9]/g,''); judge(parseInt(v,10)===it.y, it, null, v?v+'年':'（無回答）'); };
+    inp.onkeydown=function(ev){ if(ev.key==='Enter'){ sub.click(); } };
+    $('ansarea').appendChild(inp); $('ansarea').appendChild(sub);
+    setTimeout(function(){inp.focus();},60);
+  }
+}
+
+function makeOptions(it, key){
+  var others=DATA.filter(function(d){return d.y!==it.y;});
+  others.sort(function(a,b){return Math.abs(a.y-it.y)-Math.abs(b.y-it.y);});
+  var near=shuffle(others.slice(0,14)).slice(0,3);
+  return shuffle([it].concat(near));
+}
+
+function judge(ok, it, btn, given){
+  answered=true;
+  if(ok){ correct++; } else { misses.push({item:it, given:given}); }
+  if(btn){
+    btn.className = ok?'pickok':'pickng';
+    if(!ok){
+      var bs=btn.parentNode.querySelectorAll('button');
+      for(var i=0;i<bs.length;i++){
+        var txt=bs[i].textContent;
+        if(txt===(it.y+'年')||txt===it.e){ bs[i].className='pickok'; }
+      }
+    }
+  }
+  var f=$('feed'); f.className='feed '+(ok?'ok':'ng'); f.style.display='block';
+  $('verdict').textContent = ok ? '◯　正解！' : '×　まちがい';
+  $('ansline').textContent = it.y+'年　'+it.e + (ok?'':'　（あなたの答え：'+given+'）');
+  $('goroline').innerHTML = '<b>語呂合わせ：</b>'+esc(it.g);
+  var nb=document.createElement('button'); nb.className='primary';
+  nb.textContent = (idx===queue.length-1)?'結果を見る':'次の問題へ';
+  nb.onclick=function(){ idx++; render(); };
+  $('nav').appendChild(nb);
+  setTimeout(function(){nb.focus();},50);
+}
+
+/* ---- order mode ---- */
+var orderPick=[];
+function renderOrder(){
+  var grp=queue[idx];
+  orderPick=[];
+  $('qlabel').textContent='古い順にクリックしよう';
+  $('qtext').textContent='次の4つを古い順に並べよう';
+  $('qera').textContent='';
+  var box=document.createElement('div'); box.className='choices';
+  shuffle(grp.slice()).forEach(function(o){
+    var b=document.createElement('button'); b.textContent=o.e;
+    b.onclick=function(){
+      if(answered||b.disabled)return;
+      b.disabled=true; b.className='picked'; orderPick.push(o); b._item=o;
+      b.textContent=orderPick.length+'. '+o.e;
+      if(orderPick.length===4){
+        var sorted=grp.slice().sort(function(a,c){return a.y-c.y;});
+        var ok=true; for(var i=0;i<4;i++){ if(orderPick[i].y!==sorted[i].y) ok=false; }
+        answered=true;
+        var bs=box.querySelectorAll('button');
+        for(var k=0;k<bs.length;k++){
+          var pos=orderPick.indexOf(bs[k]._item);
+          bs[k].className = (sorted[pos] && sorted[pos].y===bs[k]._item.y) ? 'pickok' : 'pickng';
+        }
+        if(ok){correct++;}else{misses.push({item:sorted[0], given:'並べ替えミス', order:sorted});}
+        var f=$('feed'); f.className='feed '+(ok?'ok':'ng'); f.style.display='block';
+        $('verdict').textContent=ok?'◯　正解！':'×　順番がちがいます';
+        $('ansline').textContent=sorted.map(function(s){return s.y+' '+s.e;}).join('　→　');
+        $('goroline').innerHTML=sorted.map(function(s){return '<b>'+s.y+'</b>：'+esc(s.g);}).join('<br>');
+        var nb=document.createElement('button'); nb.className='primary';
+        nb.textContent=(idx===queue.length-1)?'結果を見る':'次の問題へ';
+        nb.onclick=function(){ idx++; render(); };
+        $('nav').appendChild(nb);
+      }
+    };
+    box.appendChild(b);
+  });
+  $('ansarea').appendChild(box);
+}
+
+/* ---- result ---- */
+function finish(){
+  show('result');
+  var total=queue.length;
+  var pct=total?Math.round(correct/total*100):0;
+  $('scoreNum').textContent=correct+' / '+total;
+  $('scoreSub').textContent='正答率 '+pct+'％　'+(pct>=90?'すばらしい！この調子。':pct>=70?'あと一歩。まちがえた問題を語呂で固めよう。':'ストーリーを読み直してから再挑戦しよう。');
+  $('rbar').style.width=pct+'%';
+  var mb=$('missBody'); mb.innerHTML='';
+  if(!misses.length){ $('missPanel').style.display='none'; return; }
+  $('missPanel').style.display='block';
+  misses.forEach(function(m){
+    var d=document.createElement('div'); d.className='missrow';
+    if(m.order){
+      d.innerHTML='<b>並べ替え</b>　正しい順：'+m.order.map(function(s){return s.y+' '+esc(s.e);}).join(' → ');
+    } else {
+      d.innerHTML='<b>'+m.item.y+'年</b>　'+esc(m.item.e)+'<span class="mg">語呂：'+esc(m.item.g)+'</span>';
+    }
+    mb.appendChild(d);
+  });
+}
+
+/* ---- list mode ---- */
+$('listBtn').onclick=function(){ buildList(); show('listmode'); };
+$('listBack').onclick=function(){ show('setup'); };
+var hideMode='none';
+function setHide(m,btn){
+  hideMode=m;
+  ['showAll','hideYear','hideEvent'].forEach(function(k){$(k).className='chip';});
+  btn.className='chip on'; buildList();
+}
+$('showAll').onclick=function(){setHide('none',this);};
+$('hideYear').onclick=function(){setHide('y',this);};
+$('hideEvent').onclick=function(){setHide('e',this);};
+
+function buildList(){
+  var body=$('listBody'); body.innerHTML='';
+  ERAS.forEach(function(era){
+    var items=DATA.filter(function(d){return d.era===era;});
+    if(!items.length)return;
+    var h=document.createElement('div'); h.className='eratitle'; h.textContent=era; body.appendChild(h);
+    var t=document.createElement('table');
+    t.innerHTML='<tr><th style="width:66px">年</th><th style="width:34%">出来事</th><th>語呂合わせ</th></tr>';
+    items.forEach(function(d){
+      var tr=document.createElement('tr');
+      var yc='yr'+(hideMode==='y'?' hidden-cell':'');
+      var ec=(hideMode==='e'?'hidden-cell':'');
+      tr.innerHTML='<td class="'+yc+'">'+d.y+'</td><td class="'+ec+'">'+esc(d.e)+'</td><td>'+esc(d.g)+'</td>';
+      if(hideMode!=='none'){
+        tr.className='hide';
+        var cell=tr.querySelector('.hidden-cell');
+        if(cell) cell.onclick=function(){ cell.className=cell.className.replace('hidden-cell','').trim(); };
+      }
+      t.appendChild(tr);
+    });
+    body.appendChild(t);
+  });
+}
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+</script>
+</body>
+</html>
