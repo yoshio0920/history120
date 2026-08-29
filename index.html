@@ -34,7 +34,7 @@
   .bar{height:7px;background:#e6ecf5;border-radius:99px;overflow:hidden;margin:10px 0 0}
   .bar>i{display:block;height:100%;background:linear-gradient(90deg,#2e74b5,#1f3864);width:0;transition:.3s}
   /* quiz */
-  #quiz{display:none}
+  #quiz,#dashboard{display:none}
   .qmeta{display:flex;justify-content:space-between;font-size:12.5px;color:var(--muted);margin-bottom:6px}
   .qbox{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:22px 18px;text-align:center;
     box-shadow:0 2px 8px rgba(20,40,80,.06)}
@@ -80,6 +80,7 @@
   tr.hide td.hidden-cell{color:transparent;background:#eef2f8;cursor:pointer;border-radius:4px}
   .hint{font-size:12px;color:var(--muted);margin:0 0 8px}
   .eratitle{margin:20px 0 7px;font-size:15px;font-weight:800;color:var(--accent);border-bottom:2px solid var(--accent2);padding-bottom:4px}
+  .dashgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.metric{background:#f7f9fc;border:1px solid var(--line);border-radius:9px;padding:11px;text-align:center}.metric strong{display:block;font-size:24px;color:var(--accent)}.metric span,.tiny{font-size:11.5px;color:var(--muted)}.skillrow{display:grid;grid-template-columns:minmax(120px,1fr) 2fr 48px;gap:8px;align-items:center;margin:8px 0;font-size:12.5px}.skillbar{height:9px;background:#e6ecf5;border-radius:99px;overflow:hidden}.skillbar i{display:block;height:100%;background:var(--accent2)}.skillbar i.weak{background:#d45145}.skillbar i.mid{background:#d79a2b}.recommend{border-left:4px solid var(--warn);background:#fffaf0;padding:11px;border-radius:8px;line-height:1.6;font-size:13px}.danger{color:var(--ng);border-color:#efc1bd}
   footer{text-align:center;color:var(--muted);font-size:11.5px;padding:20px 10px 30px}
 </style>
 </head>
@@ -124,6 +125,7 @@
 
     <div class="row" style="justify-content:center;margin-top:4px">
       <button class="primary" id="startBtn">テスト開始</button>
+      <button class="ghost" id="dashBtn">学習分析</button>
       <button class="ghost" id="listBtn">一覧・暗記モードを見る</button>
     </div>
   </div>
@@ -178,6 +180,14 @@
     <div id="listBody"></div>
   </div>
 
+  <div id="dashboard">
+    <div class="panel"><h2>学習カルテ</h2><div class="dashgrid" id="dashMetrics"></div><p class="tiny">このブラウザ内に保存。累積と直近20問を分けて分析します。</p></div>
+    <div class="panel"><h2>今日のおすすめ</h2><div id="dashRecommend"></div><div class="row" style="margin-top:10px"><button class="primary" id="startRecommended">おすすめ10問</button><button class="ghost" id="startDue">要復習だけ</button></div></div>
+    <div class="panel"><h2>時代別の定着度</h2><div id="dashSections"></div></div>
+    <div class="panel"><h2>苦手な年代</h2><div id="dashQuestions"></div></div>
+    <div class="panel"><h2>データ管理</h2><div class="row"><button class="ghost" id="exportLog">記録を書き出す</button><button class="ghost" id="importLog">記録を読み込む</button><button class="danger" id="clearLog">記録を消去</button><button class="ghost" id="dashBack">設定に戻る</button><input type="file" id="importFile" accept="application/json" style="display:none"></div></div>
+  </div>
+
 </div>
 <footer>入試頻出！重要年代120問　自己テスト｜語呂合わせは各問の解説に表示されます</footer>
 
@@ -190,6 +200,9 @@ var mode='e2y', count=10, selEras={}, queue=[], idx=0, correct=0, misses=[], ans
 
 function $(id){return document.getElementById(id);}
 function shuffle(a){for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t;}return a;}
+var STORE_KEY='japanese-history-120-v2', STUDY=loadStore();
+function emptyStore(){return {version:2,answers:[]};}function loadStore(){try{var x=JSON.parse(localStorage.getItem(STORE_KEY)||'null');return x&&x.version===2?x:emptyStore();}catch(e){return emptyStore();}}function saveStore(){try{localStorage.setItem(STORE_KEY,JSON.stringify(STUDY));}catch(e){}}
+function itemKey(d){return 'y'+d.y+'-'+d.e;}function logAnswer(d,ok,given,kind){STUDY.answers.push({id:itemKey(d),era:d.era,mode:kind||mode,ok:!!ok,g:given,y:d.y,e:d.e,t:Date.now()});if(STUDY.answers.length>12000)STUDY.answers=STUDY.answers.slice(-12000);saveStore();}function rate(a,b){return b?Math.round(a/b*100):0;}function itemStats(){var o={};STUDY.answers.forEach(function(a){var z=o[a.id]||(o[a.id]={n:0,ok:0,last:0,streak:0});z.n++;z.ok+=a.ok?1:0;z.last=a.t;z.streak=a.ok?Math.max(0,z.streak)+1:Math.min(0,z.streak)-1;});return o;}function weakScore(d,qs){var z=qs[itemKey(d)];if(!z)return 82;return (1-z.ok/z.n)*65+(z.n<3?15:0)+(z.streak<0?Math.min(18,-z.streak*6):0)+Math.min(14,(Date.now()-z.last)/86400000);}
 
 /* ---- setup UI ---- */
 ERAS.forEach(function(e){
@@ -251,7 +264,7 @@ function buildQueue(src, all){
 }
 
 function show(which){
-  ['setup','quiz','result','listmode'].forEach(function(k){ $(k).style.display = (k===which) ? (k==='result'?'block':'block') : 'none'; });
+  ['setup','quiz','result','listmode','dashboard'].forEach(function(k){ $(k).style.display = (k===which) ? 'block' : 'none'; });
   window.scrollTo(0,0);
 }
 function run(){ show('quiz'); render(); }
@@ -314,6 +327,7 @@ function makeOptions(it, key){
 
 function judge(ok, it, btn, given){
   answered=true;
+  logAnswer(it,ok,given,mode);
   if(ok){ correct++; } else { misses.push({item:it, given:given}); }
   if(btn){
     btn.className = ok?'pickok':'pickng';
@@ -361,6 +375,7 @@ function renderOrder(){
           bs[k].className = (sorted[pos] && sorted[pos].y===bs[k]._item.y) ? 'pickok' : 'pickng';
         }
         if(ok){correct++;}else{misses.push({item:sorted[0], given:'並べ替えミス', order:sorted});}
+        for(var z=0;z<sorted.length;z++)logAnswer(sorted[z],orderPick[z]&&orderPick[z].y===sorted[z].y,'並べ替え','order');
         var f=$('feed'); f.className='feed '+(ok?'ok':'ng'); f.style.display='block';
         $('verdict').textContent=ok?'◯　正解！':'×　順番がちがいます';
         $('ansline').textContent=sorted.map(function(s){return s.y+' '+s.e;}).join('　→　');
@@ -384,6 +399,7 @@ function finish(){
   $('scoreNum').textContent=correct+' / '+total;
   $('scoreSub').textContent='正答率 '+pct+'％　'+(pct>=90?'すばらしい！この調子。':pct>=70?'あと一歩。まちがえた問題を語呂で固めよう。':'ストーリーを読み直してから再挑戦しよう。');
   $('rbar').style.width=pct+'%';
+  renderDashboard();
   var mb=$('missBody'); mb.innerHTML='';
   if(!misses.length){ $('missPanel').style.display='none'; return; }
   $('missPanel').style.display='block';
@@ -397,6 +413,14 @@ function finish(){
     mb.appendChild(d);
   });
 }
+
+/* ---- 学習分析 ---- */
+$('dashBtn').onclick=function(){renderDashboard();show('dashboard');};$('dashBack').onclick=function(){show('setup');};
+function recommended(onlyDue){var qs=itemStats(),now=Date.now();return DATA.filter(function(d){var z=qs[itemKey(d)];return !onlyDue||z&&(z.streak<1||z.ok/z.n<.8||now-z.last>3*86400000);}).sort(function(a,b){return weakScore(b,qs)-weakScore(a,qs);});}
+function renderDashboard(){var n=STUDY.answers.length,ok=STUDY.answers.reduce(function(a,x){return a+(x.ok?1:0);},0),r=STUDY.answers.slice(-20),rok=r.reduce(function(a,x){return a+(x.ok?1:0);},0),seen={};STUDY.answers.forEach(function(a){seen[a.id]=1;});$('dashMetrics').innerHTML='<div class="metric"><strong>'+n+'</strong><span>累計解答</span></div><div class="metric"><strong>'+rate(ok,n)+'%</strong><span>累計正答率</span></div><div class="metric"><strong>'+rate(rok,r.length)+'%</strong><span>直近20問</span></div><div class="metric"><strong>'+Object.keys(seen).length+'</strong><span>経験済み年代</span></div><div class="metric"><strong>'+(DATA.length-Object.keys(seen).length)+'</strong><span>未出題年代</span></div><div class="metric"><strong>'+new Set(STUDY.answers.map(function(x){return new Date(x.t).toDateString();})).size+'</strong><span>学習日数</span></div>';
+var sec={};ERAS.forEach(function(s){sec[s]={n:0,ok:0};});STUDY.answers.forEach(function(a){var z=sec[a.era];if(z){z.n++;z.ok+=a.ok?1:0;}});var ranked=ERAS.slice().sort(function(a,b){return (sec[a].n?rate(sec[a].ok,sec[a].n):-1)-(sec[b].n?rate(sec[b].ok,sec[b].n):-1);}),target=ranked.filter(function(s){return sec[s].n;})[0];$('dashRecommend').innerHTML='<div class="recommend"><b>'+(n?'次は「'+esc(target)+'」を優先':'まずは全時代から10問')+'</b><br>苦手・忘れかけ・未出題を混ぜます。おすすめ演習は現在選択中の回答形式で出題します。</div>';$('dashSections').innerHTML=ranked.map(function(s){var z=sec[s],p=rate(z.ok,z.n),cl=p<60?'weak':p<80?'mid':'';return '<div class="skillrow"><span>'+esc(s)+' ('+z.n+')</span><div class="skillbar"><i class="'+cl+'" style="width:'+p+'%"></i></div><b>'+(z.n?p+'%':'未')+'</b></div>';}).join('');var qs=itemStats(),weak=DATA.filter(function(d){var z=qs[itemKey(d)];return z&&z.ok<z.n;}).sort(function(a,b){return weakScore(b,qs)-weakScore(a,qs);}).slice(0,8);$('dashQuestions').innerHTML=weak.length?weak.map(function(d){var z=qs[itemKey(d)];return '<div class="missrow"><b>'+d.y+'年　'+rate(z.ok,z.n)+'%</b> '+esc(d.e)+'<span class="mg">語呂：'+esc(d.g)+'</span></div>';}).join(''):'<p class="stats">まだ苦手データはありません。</p>';}
+function launchRecommended(xs){if(!xs.length){alert('対象年代がまだありません。');return;}buildQueue(xs.slice(0,10),true);run();}$('startRecommended').onclick=function(){launchRecommended(recommended(false));};$('startDue').onclick=function(){launchRecommended(recommended(true));};
+$('exportLog').onclick=function(){var b=new Blob([JSON.stringify(STUDY,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='日本史120問_学習記録.json';a.click();setTimeout(function(){URL.revokeObjectURL(a.href);},500);};$('importLog').onclick=function(){$('importFile').click();};$('importFile').onchange=function(){var f=this.files[0],r=new FileReader();if(!f)return;r.onload=function(){try{var x=JSON.parse(r.result);if(!x||x.version!==2||!Array.isArray(x.answers))throw 0;STUDY=x;saveStore();renderDashboard();alert('読み込みました。');}catch(e){alert('学習記録ファイルではありません。');}};r.readAsText(f);};$('clearLog').onclick=function(){if(confirm('学習記録をすべて消しますか？')){STUDY=emptyStore();saveStore();renderDashboard();}};
 
 /* ---- list mode ---- */
 $('listBtn').onclick=function(){ buildList(); show('listmode'); };
